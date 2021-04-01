@@ -10,11 +10,13 @@
     user = 'dbuser'
 
 5. Download python libraries present in requirements.txt
-    pip install requirements.txt
-
+    ```python
+        pip install requirements.txt
+    ```
 6. run the file updateAll2020.py
-    python updateAll2020.py
-
+    ```python
+        python updateAll2020.py
+    ```
 
 ## Files Description
 ### 1. updateticker.py:
