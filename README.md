@@ -45,6 +45,5 @@
 ### 6. utils.py 
     This file contains class that extracts table of content, exhibits information and quater/fiscal date of filings
 
-### Currently the script is able to download 1 year data in a day
-    It needs to be very fast and download data from 2010 till date in maximum of 2 days 
+### Currently the script is able to download 1 year data in a day. It needs to be very fast and download data from 2010 till date in maximum of 2 days 
 
