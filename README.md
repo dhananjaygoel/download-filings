@@ -2,7 +2,7 @@
 1. clone reprository https://github.com/dhananjaygoel/download-filings
 2. Download db backup from the link https://drive.google.com/file/d/1FjAnA87pAHYLWcXnOYTDnoiTL-nvA5vL/view?usp=sharing
 3. Create database and restore the db
-4. update config.py and update the variables based on your db configuration
+4. update config.py  variables based on your db configuration
     database_name = 'yourdbname'
     port = dbport
     host = 'dbhost'
