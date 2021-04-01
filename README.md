@@ -13,9 +13,9 @@
     ```python
         pip install requirements.txt
     ```
-6. run the file updateAll2020.py
+6. run the file updateAll2010.py
     ```python
-        python updateAll2020.py
+        python updateAll2010.py
     ```
 
 ## Files Description
