@@ -1,6 +1,7 @@
 # ../static/routine/updatefilings.py
 # download index files and write content into Mysql
 # @radiasl for ExarNorth
+
 from boto3 import resource,client
 import csv, time, urllib.request
 from bs4 import BeautifulSoup
@@ -11,8 +12,11 @@ import pymysql,json,os,sys,datetime
 from  config import *
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
-
-
+utils_path = current_dir+'/'+'../../../'
+sys.path.append(utils_path)
+from time import sleep
+import sys
+sys.setrecursionlimit(10**6)
 
 from  utils import TOCAlternativeExtractor
 
@@ -22,7 +26,8 @@ s3 = resource('s3',aws_access_key_id=AccesseyID,aws_secret_access_key=Secret)
 
 
 def download_filings(start_from,jump,thread_name):
-    
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+
     try:
         connection = pymysql.connect(host=host,#'localhost'
                                             database=database_name,#'mblazr',
@@ -44,28 +49,38 @@ def download_filings(start_from,jump,thread_name):
             
             i = 0
             for r in list(records)[start_from::jump]:
+                sleep(0.5)
                 i+=1     
                 
                 filingtype = r[2]
                 
-                if (int(r[0]) ==1 )   or  filingtype == '20-F': # skip first row  <35202 
+                if (int(r[0]) ==1 ): # skip first row  <35202 
                     continue
 
                 print(thread_name,r[0])
                 log_row = r
 
                 try:
-                    response = get(r[5])
+                    print(thread_name,r[5])
+                    response = get(r[5],headers=headers)
                     html_soup = BeautifulSoup(response.text, 'html.parser')
                     print(thread_name,r[1],'Success! Fetching HTML Code')
-                    table = html_soup.find_all('table', class_ = 'tableFile')[0]
+                    try:
+                        table = html_soup.find_all('table', class_ = 'tableFile')[0]
+                    except IndexError:
+                        html_soup = BeautifulSoup(response.text.replace("<!-->", ""), 'html.parser')
+                        all_table = html_soup.find_all('table')
+                        for tbl in all_table:
+                            if filingtype in tbl:
+                                table = tbl
+                                break
                     check = 0
                     
                     for tr in table.find_all('tr')[1:]:
                         if filingtype  in tr.find_all('td')[3].get_text() and not (filingtype+'/A') in tr.find_all('td')[3].get_text():
                             a = tr.find_all('a')
                             for links in a:
-                                link = links.get('href')
+                                link = links.get('href',headers=headers)
                                 if link != None:
                                     form_link = 'https://www.sec.gov'+ link
                                     print(thread_name,form_link)
@@ -89,7 +104,7 @@ def download_filings(start_from,jump,thread_name):
                                         if 'ix?doc=/' in form_link:
                                             url = url.replace('ix?doc=/', '')
 
-                                        req = get(url)
+                                        req = get(url,headers=headers)
                                         html = req.text
                                         soup =BeautifulSoup(html,'html.parser')
                                         
@@ -117,7 +132,7 @@ def download_filings(start_from,jump,thread_name):
                                                 pass
                                             
                                             # download image
-                                            print(img_url, form_image)
+                                            #print(img_url, form_image)
 
                                             img['src'] = form_image
                                             '''

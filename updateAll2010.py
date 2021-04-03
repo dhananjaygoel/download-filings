@@ -21,7 +21,7 @@ download_cik = update_ticker()
 
 #call script to generate json files
 
-start_year = 2010 #modify this
+start_year = 2018 #modify this
 end_year = datetime.date.today().year
 current_quarter = (datetime.date.today().month - 1) // 3 + 1
 
@@ -44,10 +44,8 @@ except:
 else:
     print('company details updated successfully')
 
-
-
-
 print(f'download filing starting')
+
 
 t1 = threading.Thread(target = download_filings,args=(1,3,'Thread 1'))
 t2 = threading.Thread(target = download_filings,args=(2,3,'Thread 2'))

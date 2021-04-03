@@ -9,6 +9,7 @@ import requests
 import pandas
 from sqlalchemy import create_engine
 from datetime import datetime    
+from time import sleep
 
 def generate_sample_json(start_year,end_year,current_quarter,download_cik,file_name,last_two = False):
 
@@ -42,10 +43,13 @@ def generate_sample_json(start_year,end_year,current_quarter,download_cik,file_n
     cur = con.cursor()
     cur.execute('DROP TABLE IF EXISTS idx')
     cur.execute('CREATE TABLE idx (conm TEXT, type TEXT, cik TEXT, date TEXT, path TEXT)')
+    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
 
 
     for url in urls:
-        file = requests.get(url)
+        file = requests.get(url,headers=headers)
+        sleep(1)
+        
         if file.status_code == 200:
             # problem with these two:
             if (url=='https://www.sec.gov/Archives/edgar/full-index/2017/QTR3/crawler.idx') or (url=='https://www.sec.gov/Archives/edgar/full-index/2011/QTR4/crawler.idx'):
@@ -70,6 +74,7 @@ def generate_sample_json(start_year,end_year,current_quarter,download_cik,file_n
             print(url, 'downloaded and wrote to SQLite')
         else:
             print('Url not found or not added',url)
+    
     con.commit()
     cur.close()
     con.close()
